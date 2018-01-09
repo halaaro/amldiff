@@ -1,0 +1,13 @@
+{
+  "name": "amldiff",
+  "version": "0.1.0",
+  "description": "Differencing library for Aras Innovator's AML",
+  "main": "index.js",
+  "author": "mechdude",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "pretty-data": "^0.40.0",
+    "xml-js": "^1.6.2"
+  }
+}
