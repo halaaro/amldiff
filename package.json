@@ -9,5 +9,8 @@
   "dependencies": {
     "pretty-data": "^0.40.0",
     "xml-js": "^1.6.2"
+  }, 
+  "scripts" : {
+    "test": "jest"
   }
 }

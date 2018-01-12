@@ -12,16 +12,22 @@ const opts = { compact: true, attributesKey: '_attr' }
  * an `AML.Item` is an empty list. If there is one or more Item elements, a list of objects representing 
  * the Item(s) is returned in `AML.Item`.
  **/
+
+const _normalize = (parent) => {
+    // if not present, return empty list, if single Item, add as list
+    let items = Array.isArray(parent.Item) ? parent.Item : ( parent.Item ? [ parent.Item ] : [] )
+    for (item of items) {
+        if ( item.Relationships != null ) {
+            item.Relationships.Item = _normalize(item.Relationships)
+        }
+    }
+    return items
+}
+
 const toJs = ( xml ) => {
     let obj = xml2js( xml, opts )
     if (obj && obj.AML ) {
-        if (obj.AML.Item == null) {
-            // missing Item, add as empty list
-            obj.AML.Item = []
-        } else if (obj.AML.Item.length == null) {
-            // single Item, add as list
-            obj.AML.Item = [ obj.AML.Item ]
-        }
+        obj.AML.Item = _normalize(obj.AML)
     }
     return obj
 }
