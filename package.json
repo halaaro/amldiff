@@ -6,11 +6,14 @@
   "author": "mechdude",
   "license": "MIT",
   "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mechdude/amldiff.git"
+  },
   "dependencies": {
-    "pretty-data": "^0.40.0",
     "xml-js": "^1.6.2"
-  }, 
-  "scripts" : {
+  },
+  "scripts": {
     "test": "jest"
   }
 }
