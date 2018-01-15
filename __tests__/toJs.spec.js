@@ -1,4 +1,4 @@
-const toJs = require('../toJs.js')
+const { toJs } = require('../toJs.js')
 
 test('toJs converts single Item to list', () =>{
     expect(toJs('<AML><Item/></AML>')).toEqual({'AML': {'Item': [ {} ]}})

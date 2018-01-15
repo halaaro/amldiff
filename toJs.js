@@ -1,5 +1,5 @@
 const { xml2js } = require('xml-js')
-const opts = { compact: true, attributesKey: '_attr' }
+const opts = { compact: true, attributesKey: '_attr', spaces: 2 }
 
 /**
  * @func toJS
@@ -32,4 +32,4 @@ const toJs = ( xml ) => {
     return obj
 }
 
-module.exports = toJs
+module.exports = { toJs, opts }

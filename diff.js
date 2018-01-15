@@ -1,4 +1,4 @@
-const toJs = require('./toJs.js')
+const { toJs } = require('./toJs.js')
 
 const getItems = ( a ) => {
 
@@ -14,16 +14,18 @@ const getItems = ( a ) => {
         return a.AML.Item
     }
 }
-
+const _getPropValue = (prop) => { 
+    return JSON.stringify(prop.Item) || prop._cdata || prop._text
+}
 const compareProps = (aProps, bProps) => {
     const props = {}
     for( let prop in bProps ) {
         props[prop] = bProps[prop]
     }
-
+    
     for ( let prop in aProps) {
         if ( prop in props ) { // change
-            if (aProps[prop]._text == bProps[prop]._text) { // ignore if same
+            if (_getPropValue(aProps[prop]) == _getPropValue(bProps[prop])) { // ignore if same
                 delete props[prop]
             }
         } else { // removed, replace with empty
@@ -35,32 +37,6 @@ const compareProps = (aProps, bProps) => {
 
 const _getID = (item) => {
    return item._attr || item._attr.id || item.id || item.id._text
-}
-
-const compareRels = (aRels, bRels) => {
-    const addRels = []
-    const editRels = []
-    const deleteRels = []
-
-    for( let rel of bRels ) {
-        addRels.push(rel)
-    }
-
-    //TODO: find matching relationship by ID
-    for ( let rel of aRels) {
-        if ( _getID(rel) in addRels.map(_getID) ) { // change
-            matchedRel = addRels.filter( (v) => _getID(v) = _getID(rel) )[0]
-            relDiff = compareProps(rel, matchedRel)
-            if (!relDiff) { // ignore if same
-                // delete from addRels
-            } else { 
-                // add to editRels
-            }
-        } else { // delete
-            deleteRels.push( { _attr: { id: rel._attr.id._value, type: rel._attr.type._value, action: 'delete'} } )
-        }
-    }
-    return addRels || editRels || deleteRels ? { addRels, editRels, deleteRels } : null
 }
 
 const _getProperties = ( item ) => {
@@ -156,12 +132,11 @@ const compareItems = ( aItems, bItems ) => {
     return { addItems, editItems, deleteItems }
 }
 
-const diff = (a, b) => {
-    let [a2, b2] = [a,b].map( val => toJs( val ).AML.Item )
-    
-    let { addItems, editItems, deleteItems } = compareItems( a2, b2 )
-
-    return {'AML': { 'Item': addItems.concat(editItems).concat(deleteItems) }}
+const _diff = (a, b) => {
+    let [aObject, bObject] = [a,b].map( toJs )
+    let {addItems, editItems, deleteItems} = compareItems(aObject.AML.Item, bObject.AML.Item)
+    const diffObject = {'AML': { 'Item': addItems.concat(editItems).concat(deleteItems) }} 
+    return diffObject
 }
 
-module.exports = { diff, getItems, compareItems, compareItem, compareProps }
+module.exports = { _diff, getItems, compareItems, compareItem, compareProps }
