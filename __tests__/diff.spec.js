@@ -145,17 +145,14 @@ const testRel2_edit = `
 `
 
 test( 'add relationship', () => {
-    debugger
     expect( _diff(test1, testRel1) ).toEqual( toJs(testRel1_add) )
 })
 
 test( 'delete relationship', () => {
-    debugger
     expect( _diff(testRel1, test1) ).toEqual( toJs(testRel1_delete) )
 })
 
 test( 'edit relationship', () => {
-    debugger
     expect( _diff(testRel1, testRel2) ).toEqual( toJs(testRel2_edit) )
 })
 
@@ -265,4 +262,248 @@ const testCData2_edit = `
 
 test( 'edit cdata', () => {
   expect( _diff(testCData1, testCData2) ).toEqual( toJs(testCData2_edit) )
+})
+
+const testNoBuiltinProp = `
+<AML>
+  <Item type="test" id="123" action="add"/>
+</AML>
+`
+
+const testBuiltinProp1 = `
+<AML>
+  <Item type="test" id="123" action="add"/>
+  <Item type="test" id="123" action="edit">
+    <Relationships>
+      <Item type="Property" action="edit" where="source_id='123' and name='prop_name'">
+        <is_hidden>0</is_hidden>
+        <same>1</same>
+      </Item>
+    </Relationships>
+  </Item>
+</AML>
+`
+
+const testBuiltinProp2 = `
+<AML>
+  <Item type="test" id="123" action="add"/>
+  <Item type="test" id="123" action="edit">
+    <Relationships>
+      <Item type="Property" action="edit" where="source_id='123' and name='prop_name'">
+        <is_hidden>1</is_hidden>
+        <same>1</same>
+      </Item>
+    </Relationships>
+  </Item>
+</AML>
+`
+
+const testBuiltinProp2_edit = `
+<AML>
+  <Item type="test" id="123" action="edit">
+    <Relationships>
+      <Item type="Property" action="edit" where="source_id='123' and name='prop_name'">
+        <is_hidden>1</is_hidden>
+      </Item>
+    </Relationships>
+  </Item>
+</AML>
+`
+
+const testBuiltinProp2_add = `
+<AML>
+  <Item type="test" id="123" action="edit">
+    <Relationships>
+      <Item type="Property" action="edit" where="source_id='123' and name='prop_name'">
+        <is_hidden>1</is_hidden>
+        <same>1</same>
+      </Item>
+    </Relationships>
+  </Item>
+</AML>
+`
+
+test( 'change edit of built-in property', () => {
+  debugger
+  expect( _diff(testBuiltinProp1, testBuiltinProp2) ).toEqual( toJs(testBuiltinProp2_edit) )
+})
+
+test( 'add edit of built-in property', () => {
+  expect( _diff(testNoBuiltinProp, testBuiltinProp2) ).toEqual( toJs(testBuiltinProp2_add) )
+})
+
+const testKeepDelete = `
+<AML>
+  <Item type="test" id="123" action="delete">
+  </Item>
+</AML>
+`
+
+test( 'keep delete item', () => {
+  expect( _diff(testKeepDelete, testKeepDelete) ).toEqual( toJs(testKeepDelete) )
+})
+
+const testRelationshipItem1 = `
+<AML>
+  <Item id="123" type="RelationshipType" action="add" dependencyLevel="0">
+    <relationship_id keyed_name="RelatedItem" type="ItemType" name="RelatedItem">
+      <Item type="ItemType" id="456" action="add">
+        <allow_private_permission>1</allow_private_permission>
+      </Item>
+    </relationship_id>
+  </Item>
+</AML>
+`
+const testRelationshipItem2 = `
+<AML>
+  <Item id="123" type="RelationshipType" action="add" dependencyLevel="0">
+    <relationship_id keyed_name="RelatedItem" type="ItemType" name="RelatedItem">
+      <Item type="ItemType" id="456" action="add">
+        <allow_private_permission>0</allow_private_permission>
+      </Item>
+    </relationship_id>
+  </Item>
+</AML>
+`
+const testRelationshipItem2_edit = `
+<AML>
+  <Item id="123" type="RelationshipType" action="edit" dependencyLevel="0">
+    <relationship_id keyed_name="RelatedItem" type="ItemType" name="RelatedItem">
+      <Item type="ItemType" id="456" action="edit">
+        <allow_private_permission>0</allow_private_permission>
+      </Item>
+    </relationship_id>
+  </Item>
+</AML>
+`
+
+
+test( 'relationship itemtype no change', () => {
+  expect( _diff(testRelationshipItem1, testRelationshipItem1) ).toEqual( toJs(empty) )
+})
+
+
+test( 'relationship itemtype', () => {
+  expect( _diff(testRelationshipItem1, testRelationshipItem1) ).toEqual( toJs(empty) )
+})
+
+const testRelationshipItem3 = `
+<AML>
+ <Item type="Parent" id="123" action="add">
+ <Relationships>
+   <Item type="Relation" action="add">
+    <related_id keyed_name="Related Name" type="Relation Type">456</related_id>
+    <prop1>1</prop1>
+    <prop2>1</prop2>
+    <source_id keyed_name="Parent Name" type="Parent">123</source_id>
+   </Item>
+  </Relationships>
+ </Item>    
+</AML>
+`
+
+
+const testRelationshipItem4 = `
+<AML>
+ <Item type="Parent" id="123" action="add">
+ <Relationships>
+   <Item type="Relation" action="add">
+    <related_id keyed_name="Related Name" type="Relation Type">456</related_id>
+    <prop1>2</prop1>
+    <prop2>1</prop2>
+    <source_id keyed_name="Parent Name" type="Parent">123</source_id>
+   </Item>
+  </Relationships>
+ </Item>    
+</AML>
+`
+
+const testRelationshipItem4_edit = `
+<AML>
+ <Item type="Parent" id="123" action="edit">
+ <Relationships>
+   <Item type="Relation" action="add">
+    <related_id keyed_name="Related Name" type="Relation Type">456</related_id>
+    <prop1>2</prop1>
+    <source_id keyed_name="Parent Name" type="Parent">123</source_id>
+   </Item>
+  </Relationships>
+ </Item>    
+</AML>
+`
+
+
+test( 'relationship without ID or where clause', () => {
+  expect( _diff(testRelationshipItem3, testRelationshipItem3) ).toEqual( toJs(empty) )
+})
+
+
+test( 'edit relationship without ID or where clause', () => {
+  debugger
+  expect( _diff(testRelationshipItem3, testRelationshipItem4) ).toEqual( toJs(testRelationshipItem4_edit) )
+})
+
+
+const testRelationshipItem5 = `
+<AML>
+ <Item type="Parent" id="123" action="add">
+ <Relationships>
+   <Item type="Relation" action="add">
+    <related_id keyed_name="Related Name" type="Relation Type">
+      <Item type="Child" action="add" id="456">
+        <child_prop1>1</child_prop1>
+        <child_prop2>2</child_prop2>
+      </Item>
+    </related_id>
+    <source_id keyed_name="Parent Name" type="Parent">123</source_id>
+   </Item>
+  </Relationships>
+ </Item>    
+</AML>
+`
+
+const testRelationshipItem6 = `
+<AML>
+ <Item type="Parent" id="123" action="add">
+ <Relationships>
+   <Item type="Relation" action="add">
+    <related_id keyed_name="Related Name" type="Relation Type">
+      <Item type="Child" action="add" id="456">
+        <child_prop1>2</child_prop1>
+        <child_prop2>2</child_prop2>
+      </Item>
+    </related_id>
+    <source_id keyed_name="Parent Name" type="Parent">123</source_id>
+   </Item>
+  </Relationships>
+ </Item>    
+</AML>
+`
+
+const testRelationshipItem6_edit = `
+<AML>
+ <Item type="Parent" id="123" action="edit">
+  <Relationships>
+   <Item type="Relation" action="add">
+    <related_id keyed_name="Related Name" type="Relation Type">
+      <Item type="Child" action="edit" id="456">
+        <child_prop1>2</child_prop1>
+      </Item>
+    </related_id>
+    <source_id keyed_name="Parent Name" type="Parent">123</source_id>
+   </Item>
+  </Relationships>
+ </Item>    
+</AML>
+`
+
+
+
+test( 'same child relationship without ID or where clause should be ignored', () => {
+  expect( _diff(testRelationshipItem5, testRelationshipItem5) ).toEqual( toJs(empty) )
+})
+
+
+test( 'changed child relationship without ID or where clause', () => {
+  expect( _diff(testRelationshipItem5, testRelationshipItem6) ).toEqual( toJs(testRelationshipItem6_edit) )
 })
