@@ -507,3 +507,48 @@ test( 'same child relationship without ID or where clause should be ignored', ()
 test( 'changed child relationship without ID or where clause', () => {
   expect( _diff(testRelationshipItem5, testRelationshipItem6) ).toEqual( toJs(testRelationshipItem6_edit) )
 })
+
+
+const testNonKeyedProp1 = `
+<AML>
+  <Item type="test" id="123" action="add">
+    <Relationships>
+      <Item type="Property" action="add" id="456">
+        <is_keyed>0</is_keyed>
+        <same>1</same>
+      </Item>
+    </Relationships>
+  </Item>
+</AML>
+`
+
+const testKeyedProp1 = `
+<AML>
+  <Item type="test" id="123" action="add"/>
+  <Item type="test" id="123" action="edit">
+    <Relationships>
+      <Item type="Property" action="add" id="456">
+        <is_keyed>1</is_keyed>
+        <same>1</same>
+      </Item>
+    </Relationships>
+  </Item>
+</AML>
+`
+
+const testKeyedProp1_edit = `
+<AML>
+  <Item type="test" id="123" action="edit">
+    <Relationships>
+      <Item type="Property" action="edit" id="456">
+        <is_keyed>1</is_keyed>
+      </Item>
+    </Relationships>
+  </Item>
+</AML>
+`
+
+test( 'change property from non-keyed to keyed', () => {
+  debugger
+  expect( _diff(testNonKeyedProp1, testKeyedProp1) ).toEqual( toJs(testKeyedProp1_edit) )
+})
