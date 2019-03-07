@@ -196,7 +196,12 @@ const compareItems = ( aItems, bItems ) => {
                 } else {
                     diff._attr.action = 'edit'
                 }
-                editItems.push( diff )
+                if (diff._attr.type === 'Method') {
+                    addItems.push(bItem)
+                } else {
+                    editItems.push( diff )
+                }
+                
             }
         }
     } 
